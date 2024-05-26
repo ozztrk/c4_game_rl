@@ -1,5 +1,3 @@
-# Module 2: replay_memory.py
-
 import random
 
 class ReplayMemory:

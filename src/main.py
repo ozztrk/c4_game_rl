@@ -61,14 +61,15 @@ def main():
     # Train the agent
     agent = Agent()
     agent.train()
-    agent.demo()
     # Save the trained model
     agent.save_model('policy_net.pth')
+    agent.demo()
 
     # Evaluate the agent
     wins, draws, losses = evaluate_agent(agent, num_episodes=100)
 
     print(f"Wins: {wins}, Draws: {draws}, Losses: {losses}")
+    print(f'Win rate: {wins / 100 * 100}%')
 
 if __name__ == '__main__':
     main()

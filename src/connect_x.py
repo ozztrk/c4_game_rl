@@ -1,5 +1,3 @@
-# Module 1: connect_x.py
-
 import numpy as np
 import pandas as pd
 from IPython.display import display
@@ -15,7 +13,7 @@ class ConnectX:
         self.reward = {'win': 1, 'draw': 0.5, 'lose': -1}
     
     def render(self):
-        rendered_board_state = self.board_state.copy().astype(np.str)
+        rendered_board_state = self.board_state.copy().astype(str)
         rendered_board_state[self.board_state == 0] = ' '
         rendered_board_state[self.board_state == 1] = 'O'
         rendered_board_state[self.board_state == 2] = 'X'

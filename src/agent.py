@@ -1,4 +1,3 @@
-# Module 4: agent.py
 from itertools import count
 import torch
 import torch.optim as optim
@@ -17,6 +16,9 @@ print(device)
 def random_agent(available_actions):
     return random.choice(available_actions)
 
+
+
+
 class Agent:
     def __init__(self):
         self.env = ConnectX()
@@ -27,6 +29,7 @@ class Agent:
         self.target_net.eval()
         self.optimizer = optim.Adam(self.policy_net.parameters())
         self.steps_done = 0
+        self.training_history = []
         self.NUM_EPISODES = 20000
         self.BATCH_SIZE = 256
         self.GAMMA = 0.999
@@ -34,6 +37,31 @@ class Agent:
         self.EPS_END = 0.05
         self.EPS_DECAY = 2000
         self.TARGET_UPDATE = 10
+        
+    def win_rate_test(self):
+        win_moves_taken_list = []
+        win = []
+        for i in range(100):
+            self.env.reset()
+            win_moves_taken = 0
+
+            while not self.env.isDone:
+                state = self.env.board_state.copy()
+                available_actions = self.env.get_available_actions()
+                action = self.select_action(state, available_actions, training=False)
+                state, reward = self.env.make_move(action, 'p1')
+                win_moves_taken += 1
+
+                if reward == 1:
+                    win_moves_taken_list.append(win_moves_taken)
+                    win.append(1)
+                    break
+
+                available_actions = self.env.get_available_actions()
+                action = random_agent(available_actions)
+                state, reward = self.env.make_move(action, 'p2')
+
+        return sum(win)/100, sum(win_moves_taken_list)/len(win_moves_taken_list)
 
     def select_action(self, state, available_actions, training=True):
         state = torch.tensor(state, dtype=torch.float, device=device).unsqueeze(0).unsqueeze(0)
@@ -46,7 +74,8 @@ class Agent:
         if epsilon > eps_threshold:
             with torch.no_grad():
                 r_actions = self.policy_net(state)[0, :]
-                state_action_values = [r_actions[action] for action in available_actions]
+                state_action_values = [r_actions[action].cpu() for action in available_actions]
+                state_action_values = np.array([value.item() for value in state_action_values])
                 argmax_action = np.argmax(state_action_values)
                 greedy_action = available_actions[argmax_action]
                 return greedy_action
@@ -80,6 +109,15 @@ class Agent:
         for i in tqdm(range(self.NUM_EPISODES), desc='Training'): 
             self.env.reset()
             state_p1 = self.env.board_state.copy()
+            # record every 20 epochs
+            if i % 20 == 19:
+                win_rate, moves_taken = self.win_rate_test()
+                self.training_history.append([i + 1, win_rate, moves_taken])
+                xth = np.array(self.training_history)
+                # print training message every 200 epochs
+                if i % 200 == 199:
+                    print('Episode {}: | win_rate: {} | moves_taken: {}'.format(i, xth[-1, 1], xth[-1, 2]))
+
 
             for t in count():
                 available_actions = self.env.get_available_actions()
