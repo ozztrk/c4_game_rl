@@ -1,4 +1,4 @@
-from agent import Agent
+from src.agent import Agent
 
 def evaluate_agent(agent, num_episodes=100):
     wins = 0
