@@ -30,7 +30,7 @@ class Agent:
         self.optimizer = optim.Adam(self.policy_net.parameters())
         self.steps_done = 0
         self.training_history = []
-        self.NUM_EPISODES = 20000
+        self.NUM_EPISODES = 10000
         self.BATCH_SIZE = 256
         self.GAMMA = 0.999
         self.EPS_START = 0.9
@@ -80,7 +80,10 @@ class Agent:
                 greedy_action = available_actions[argmax_action]
                 return greedy_action
         else:
-            return random.choice(available_actions)
+            if available_actions:
+                return random.choice(available_actions)
+            else:
+                return None
 
     def optimize_model(self):
         if len(self.memory) < self.BATCH_SIZE:

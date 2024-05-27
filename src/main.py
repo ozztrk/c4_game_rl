@@ -1,4 +1,4 @@
-from src.agent import Agent
+from  agent import Agent
 
 def evaluate_agent(agent, num_episodes=100):
     wins = 0
@@ -66,10 +66,10 @@ def main():
     agent.demo()
 
     # Evaluate the agent
-    wins, draws, losses = evaluate_agent(agent, num_episodes=100)
+    # wins, draws, losses = evaluate_agent(agent, num_episodes=100)
 
-    print(f"Wins: {wins}, Draws: {draws}, Losses: {losses}")
-    print(f'Win rate: {wins / 100 * 100}%')
+    # print(f"Wins: {wins}, Draws: {draws}, Losses: {losses}")
+    # print(f'Win rate: {wins / 100 * 100}%')
 
 if __name__ == '__main__':
     main()
